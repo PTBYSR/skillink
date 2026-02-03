@@ -50,7 +50,7 @@ export async function completeOnboarding(prevState: any, formData: FormData) {
 
     } catch (e: any) {
         if (e instanceof z.ZodError) {
-            return { error: e.errors[0].message };
+            return { error: e.issues[0].message };
         }
         return { error: 'Failed to save profile' };
     }

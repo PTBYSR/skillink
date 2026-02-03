@@ -3,6 +3,7 @@ import connectDB from '@/lib/db';
 import User from '@/models/User';
 import { getSession } from '@/lib/auth';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export default async function MePage() {
     await connectDB();
@@ -12,7 +13,6 @@ export default async function MePage() {
     const user = await User.findById(session.userId);
 
     if (!user) {
-        const { redirect } = require('next/navigation');
         redirect('/auth');
     }
 
