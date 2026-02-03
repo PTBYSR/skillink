@@ -11,6 +11,11 @@ export default async function MePage() {
 
     const user = await User.findById(session.userId);
 
+    if (!user) {
+        const { redirect } = require('next/navigation');
+        redirect('/auth');
+    }
+
     return (
         <div className="min-h-screen bg-white p-6">
             <h1 className="text-3xl font-bold mb-6">My Profile</h1>
