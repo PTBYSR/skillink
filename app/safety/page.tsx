@@ -1,13 +1,22 @@
 
 import connectDB from '@/lib/db';
 import { Block } from '@/models/Safety';
-import { getSession } from '@/lib/auth'; // Fixed import path
+import { getSession } from '@/lib/auth';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SafetyPage() {
-    await connectDB();
     const session = await getSession();
     if (!session) return <div>Login required</div>;
+
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+    if (!mongoUri) {
+        console.error('Missing MongoDB connection string.');
+        return <div>Database not configured</div>;
+    }
+
+    await connectDB();
 
     const blocks = await Block.find({ blockerId: session.userId }).populate('blockedId');
 
