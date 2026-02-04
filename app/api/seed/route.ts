@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
-import { SKILLS_LIST } from '@/lib/constants';
 
 export async function GET() {
     try {
@@ -15,39 +14,104 @@ export async function GET() {
         await User.deleteMany({}); // clear users (optional, but good for reset)
 
         const passwordHash = await bcrypt.hash('password123', 10);
-        const cities = ['New York', 'London', 'Berlin', 'Tokyo', 'San Francisco'];
 
-        const demoUsers = [];
+        const demoProfiles = [
+            {
+                name: 'Ava Chen',
+                email: 'ava@skillink.com',
+                teachSkills: ['Web Development', 'Graphic Design'],
+                learnSkills: ['Public Speaking', 'Financial Planning'],
+                preferOnline: true,
+                preferInPerson: false,
+                city: 'San Francisco',
+            },
+            {
+                name: 'Mateo Lopez',
+                email: 'mateo@skillink.com',
+                teachSkills: ['Foreign Languages', 'Public Speaking'],
+                learnSkills: ['Digital Marketing', 'Web Development'],
+                preferOnline: false,
+                preferInPerson: true,
+                city: 'Berlin',
+            },
+            {
+                name: 'Priya Patel',
+                email: 'priya@skillink.com',
+                teachSkills: ['Data Analysis'],
+                learnSkills: ['Yoga & Wellness', 'Culinary Arts'],
+                preferOnline: true,
+                preferInPerson: true,
+                city: 'London',
+            },
+            {
+                name: "Liam O'Connor",
+                email: 'liam@skillink.com',
+                teachSkills: ['Digital Marketing', 'Public Speaking'],
+                learnSkills: ['Data Analysis', 'Financial Planning'],
+                preferOnline: false,
+                preferInPerson: true,
+                city: 'New York',
+            },
+            {
+                name: 'Sofia Rossi',
+                email: 'sofia@skillink.com',
+                teachSkills: ['Culinary Arts', 'Foreign Languages'],
+                learnSkills: ['Graphic Design'],
+                preferOnline: true,
+                preferInPerson: false,
+                city: 'Rome',
+            },
+            {
+                name: 'Hiro Tanaka',
+                email: 'hiro@skillink.com',
+                teachSkills: ['Photography'],
+                learnSkills: ['Web Development', 'Digital Marketing'],
+                preferOnline: true,
+                preferInPerson: true,
+                city: 'Tokyo',
+            },
+            {
+                name: 'Amara Ndlovu',
+                email: 'amara@skillink.com',
+                teachSkills: ['Yoga & Wellness'],
+                learnSkills: ['Financial Planning', 'Public Speaking'],
+                preferOnline: false,
+                preferInPerson: true,
+                city: 'Cape Town',
+            },
+            {
+                name: 'Ethan Brooks',
+                email: 'ethan@skillink.com',
+                teachSkills: ['Financial Planning', 'Data Analysis'],
+                learnSkills: ['Graphic Design', 'Digital Marketing'],
+                preferOnline: true,
+                preferInPerson: false,
+                city: 'Chicago',
+            },
+            {
+                name: 'Lucia Garcia',
+                email: 'lucia@skillink.com',
+                teachSkills: ['Graphic Design', 'Photography'],
+                learnSkills: ['Culinary Arts', 'Foreign Languages'],
+                preferOnline: true,
+                preferInPerson: true,
+                city: 'Madrid',
+            },
+            {
+                name: 'Noah Kim',
+                email: 'noah@skillink.com',
+                teachSkills: ['Web Development'],
+                learnSkills: ['Data Analysis', 'Public Speaking'],
+                preferOnline: false,
+                preferInPerson: true,
+                city: 'Seoul',
+            },
+        ];
 
-        // Create 10 random users
-        for (let i = 0; i < 10; i++) {
-            const teachCount = Math.floor(Math.random() * 3) + 1; // 1-3 skills
-            const teach = [];
-            for (let j = 0; j < teachCount; j++) {
-                teach.push(SKILLS_LIST[Math.floor(Math.random() * SKILLS_LIST.length)]);
-            }
-
-            const learnCount = Math.floor(Math.random() * 3) + 1;
-            const learn = [];
-            for (let j = 0; j < learnCount; j++) {
-                learn.push(SKILLS_LIST[Math.floor(Math.random() * SKILLS_LIST.length)]);
-            }
-
-            const preferOnline = Math.random() > 0.3;
-            const preferInPerson = Math.random() > 0.5;
-            const city = preferInPerson ? cities[Math.floor(Math.random() * cities.length)] : undefined;
-
-            demoUsers.push({
-                name: `Demo User ${i + 1}`,
-                email: `demo${i + 1}@skillink.com`,
-                passwordHash,
-                teachSkills: [...new Set(teach)],
-                learnSkills: [...new Set(learn)],
-                preferOnline,
-                preferInPerson,
-                city
-            });
-        }
+        const demoUsers = demoProfiles.map((profile) => ({
+            ...profile,
+            passwordHash,
+        }));
 
         await User.insertMany(demoUsers);
 

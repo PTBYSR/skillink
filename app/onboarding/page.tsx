@@ -21,8 +21,8 @@ export default function OnboardingPage() {
     // but standard form submission is easiest to integrate with Server Actions.
     // We'll build a single form that shows different parts.
 
-    const totalSelected = selectedLearn.length + selectedTeach.length;
-    const MAX_TOTAL_SKILLS = 4;
+    const MAX_LEARN_SKILLS = 2;
+    const MAX_TEACH_SKILLS = 2;
 
     const toggleSkill = (type: 'learn' | 'teach', skill: string) => {
         const list = type === 'learn' ? selectedLearn : selectedTeach;
@@ -31,7 +31,8 @@ export default function OnboardingPage() {
         if (list.includes(skill)) {
             setList(list.filter((s: string) => s !== skill));
         } else {
-            if (totalSelected >= MAX_TOTAL_SKILLS) return;
+            const limit = type === 'learn' ? MAX_LEARN_SKILLS : MAX_TEACH_SKILLS;
+            if (list.length >= limit) return;
             setList([...list, skill]);
         }
     };
@@ -56,7 +57,7 @@ export default function OnboardingPage() {
                     {step === 1 && (
                         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                             <h1 className="text-3xl font-bold mb-2 italic tracking-tighter">WHAT DO YOU WANT TO LEARN?</h1>
-                            <p className="text-gray-500 mb-6">Pick skills you want to master. ({totalSelected}/{MAX_TOTAL_SKILLS} total)</p>
+                            <p className="text-gray-500 mb-6">Pick up to {MAX_LEARN_SKILLS} skills you want to master.</p>
 
                             <div className="flex flex-wrap gap-2 max-h-[60vh] overflow-y-auto pb-4">
                                 {SKILLS_LIST.map(skill => (
@@ -64,11 +65,11 @@ export default function OnboardingPage() {
                                         key={skill}
                                         type="button"
                                         onClick={() => toggleSkill('learn', skill)}
-                                        disabled={!selectedLearn.includes(skill) && totalSelected >= MAX_TOTAL_SKILLS}
+                                        disabled={!selectedLearn.includes(skill) && selectedLearn.length >= MAX_LEARN_SKILLS}
                                         className={`px-4 py-2 rounded-full border text-sm transition-colors ${selectedLearn.includes(skill)
                                             ? 'bg-black text-white border-black'
                                             : 'bg-white text-black border-gray-300 hover:border-gray-800'
-                                            } ${!selectedLearn.includes(skill) && totalSelected >= MAX_TOTAL_SKILLS ? 'opacity-20 cursor-not-allowed' : ''}`}
+                                            } ${!selectedLearn.includes(skill) && selectedLearn.length >= MAX_LEARN_SKILLS ? 'opacity-20 cursor-not-allowed' : ''}`}
                                     >
                                         {skill}
                                     </button>
@@ -80,7 +81,7 @@ export default function OnboardingPage() {
                     {step === 2 && (
                         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                             <h1 className="text-3xl font-bold mb-2 italic tracking-tighter">WHAT CAN YOU TEACH?</h1>
-                            <p className="text-gray-500 mb-6">Pick skills you are good at. ({totalSelected}/{MAX_TOTAL_SKILLS} total)</p>
+                            <p className="text-gray-500 mb-6">Pick up to {MAX_TEACH_SKILLS} skills you can teach.</p>
 
                             <div className="flex flex-wrap gap-2 max-h-[60vh] overflow-y-auto pb-4">
                                 {SKILLS_LIST.map(skill => (
@@ -88,11 +89,11 @@ export default function OnboardingPage() {
                                         key={skill}
                                         type="button"
                                         onClick={() => toggleSkill('teach', skill)}
-                                        disabled={!selectedTeach.includes(skill) && totalSelected >= MAX_TOTAL_SKILLS}
+                                        disabled={!selectedTeach.includes(skill) && selectedTeach.length >= MAX_TEACH_SKILLS}
                                         className={`px-4 py-2 rounded-full border text-sm transition-colors ${selectedTeach.includes(skill)
                                             ? 'bg-black text-white border-black'
-                                            : 'bg-white text-black border-gray-300 hover:border-gray-800'
-                                            } ${!selectedTeach.includes(skill) && totalSelected >= MAX_TOTAL_SKILLS ? 'opacity-20 cursor-not-allowed' : ''}`}
+                                            : 'bg-white text-black border-gray-300 hover-border-gray-800'
+                                            } ${!selectedTeach.includes(skill) && selectedTeach.length >= MAX_TEACH_SKILLS ? 'opacity-20 cursor-not-allowed' : ''}`}
                                     >
                                         {skill}
                                     </button>
@@ -142,12 +143,22 @@ export default function OnboardingPage() {
                         </motion.div>
                     )}
 
-                    <div className="mt-auto pt-6">
+                    <div className="mt-auto pt-6 flex gap-3">
+                        {step > 1 && (
+                            <button
+                                type="button"
+                                onClick={() => setStep(s => Math.max(1, s - 1))}
+                                className="w-full py-4 border border-black text-black font-bold rounded-xl active:scale-95 transition-transform"
+                            >
+                                Back
+                            </button>
+                        )}
+
                         {step < 3 ? (
                             <button
                                 type="button"
                                 onClick={() => setStep(s => s + 1)}
-                                disabled={(step === 1 && selectedLearn.length === 0) || (step === 2 && selectedTeach.length === 0)}
+                                disabled={(step === 1 && selectedLearn.length < MAX_LEARN_SKILLS) || (step === 2 && selectedTeach.length < MAX_TEACH_SKILLS)}
                                 className="w-full py-4 bg-black text-white font-bold rounded-xl active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100"
                             >
                                 Next
