@@ -5,11 +5,23 @@ import { getSession } from '@/lib/auth';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-export default async function MePage() {
-    await connectDB();
-    const session = await getSession();
-    if (!session) return <div>Login required</div>;
+export const dynamic = 'force-dynamic';
 
+export default async function MePage() {
+    const session = await getSession();
+
+    if (!session) {
+        return <div>Login required</div>;
+    }
+
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+    if (!mongoUri) {
+        console.error('Missing MongoDB connection string.');
+        return <div>Database not configured</div>;
+    }
+
+    await connectDB();
+    
     const user = await User.findById(session.userId);
 
     if (!user) {
